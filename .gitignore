@@ -1,4 +1,4 @@
-*.txt
+# *.txt
 dataset
 dataset_paper
 dataset_test
