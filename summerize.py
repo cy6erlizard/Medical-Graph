@@ -42,7 +42,7 @@ def call_huggingface_model(chunk):
     prompt = f"{sum_prompt}\nUser: {chunk}\nAI:"
     
     # Generate the response using the model
-    response = chat_model(prompt, max_length=500, do_sample=True, temperature=0.5)
+    response = chat_model(prompt, max_length=1000, do_sample=True, temperature=0.5)
     
     # Extract and return the text content
     return response[0]['generated_text']

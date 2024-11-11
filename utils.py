@@ -104,7 +104,7 @@ def call_llm(sys, user):
     prompt = f"System: {sys}\nUser: {user}\nAI:"
 
     # Generate the response
-    response = chat_model(prompt, max_length=500, do_sample=True, temperature=0.5)
+    response = chat_model(prompt, max_length=1000, do_sample=True, temperature=0.5)
 
     # Extract and return the generated text
     return response[0]['generated_text'].split("AI:")[1].strip()
