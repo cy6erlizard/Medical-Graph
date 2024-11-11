@@ -61,13 +61,31 @@ def call_huggingface_model(chunk):
 #     )
 #     return response.choices[0].message.content
 
+# def split_into_chunks(text, tokens=500):
+#     encoding = tiktoken.encoding_for_model('gpt-4-1106-preview')
+#     words = encoding.encode(text)
+#     chunks = []
+#     for i in range(0, len(words), tokens):
+#         chunks.append(' '.join(encoding.decode(words[i:i + tokens])))
+#     return chunks   
+
+from transformers import GPT2Tokenizer
+
+# Initialize the tokenizer
+tokenizer = GPT2Tokenizer.from_pretrained("EleutherAI/gpt-neo-2.7B")  # Change model as needed
+
 def split_into_chunks(text, tokens=500):
-    encoding = tiktoken.encoding_for_model('gpt-4-1106-preview')
-    words = encoding.encode(text)
+    # Tokenize the input text
+    words = tokenizer.encode(text)
+    
+    # Split into chunks based on the token limit
     chunks = []
     for i in range(0, len(words), tokens):
-        chunks.append(' '.join(encoding.decode(words[i:i + tokens])))
-    return chunks   
+        chunk_tokens = words[i:i + tokens]
+        # Decode each chunk back into text
+        chunks.append(tokenizer.decode(chunk_tokens, skip_special_tokens=True))
+    
+    return chunks
 
 def process_chunks(content):
     chunks = split_into_chunks(content)
