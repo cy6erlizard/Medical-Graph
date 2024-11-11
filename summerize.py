@@ -42,7 +42,7 @@ def call_huggingface_model(chunk):
     prompt = f"{sum_prompt}\nUser: {chunk}\nAI:"
     
     # Generate the response using the model
-    response = chat_model(prompt, max_length=1000, do_sample=True, temperature=0.5)
+    response = chat_model(prompt, max_length=500, do_sample=True, temperature=0.5)
     
     # Extract and return the text content
     return response[0]['generated_text']
@@ -74,7 +74,7 @@ from transformers import GPT2Tokenizer
 # Initialize the tokenizer
 tokenizer = GPT2Tokenizer.from_pretrained("EleutherAI/gpt-neo-2.7B")  # Change model as needed
 
-def split_into_chunks(text, tokens=500):
+def split_into_chunks(text, tokens=100):
     # Tokenize the input text
     words = tokenizer.encode(text)
     
