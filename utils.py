@@ -79,19 +79,36 @@ def add_sum(n4j,content,gid):
 
     return s
 
+# def call_llm(sys, user):
+#     response = openai.chat.completions.create(
+#         model="gpt-4-1106-preview",
+#         messages=[
+#             {"role": "system", "content": sys},
+#             {"role": "user", "content": f" {user}"},
+#         ],
+#         max_tokens=500,
+#         n=1,
+#         stop=None,
+#         temperature=0.5,
+#     )
+#     return response.choices[0].message.content
+
+from transformers import pipeline
+
+# Initialize the Hugging Face text-generation pipeline
+# Replace "gpt-neo-2.7B" with an appropriate Hugging Face model
+chat_model = pipeline("text-generation", model="EleutherAI/gpt-neo-2.7B")
+
 def call_llm(sys, user):
-    response = openai.chat.completions.create(
-        model="gpt-4-1106-preview",
-        messages=[
-            {"role": "system", "content": sys},
-            {"role": "user", "content": f" {user}"},
-        ],
-        max_tokens=500,
-        n=1,
-        stop=None,
-        temperature=0.5,
-    )
-    return response.choices[0].message.content
+    # Concatenate system and user messages for the Hugging Face model input
+    prompt = f"System: {sys}\nUser: {user}\nAI:"
+
+    # Generate the response
+    response = chat_model(prompt, max_length=500, do_sample=True, temperature=0.5)
+
+    # Extract and return the generated text
+    return response[0]['generated_text'].split("AI:")[1].strip()
+
 
 def find_index_of_largest(nums):
     # Sorting the list while keeping track of the original indexes

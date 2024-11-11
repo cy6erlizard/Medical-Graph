@@ -31,19 +31,35 @@ SUBSTANCE_ABUSE: Note any substance abuse mentioned.
 Each category should be addressed only if relevant to the content of the medical source. Ensure the summary is clear and direct, suitable for quick reference.
 """
 
-def call_openai_api(chunk):
-    response = openai.chat.completions.create(
-        model="gpt-4-1106-preview",
-        messages=[
-            {"role": "system", "content": sum_prompt},
-            {"role": "user", "content": f" {chunk}"},
-        ],
-        max_tokens=500,
-        n=1,
-        stop=None,
-        temperature=0.5,
-    )
-    return response.choices[0].message.content
+from transformers import pipeline
+
+# Initialize the Hugging Face model and pipeline
+# Replace "gpt-neo-2.7B" with the model of your choice
+chat_model = pipeline("text-generation", model="EleutherAI/gpt-neo-2.7B")
+
+def call_huggingface_model(chunk):
+    # Concatenate the system message with the user prompt as the Hugging Face model doesn't natively support chat roles
+    prompt = f"{sum_prompt}\nUser: {chunk}\nAI:"
+    
+    # Generate the response using the model
+    response = chat_model(prompt, max_length=500, do_sample=True, temperature=0.5)
+    
+    # Extract and return the text content
+    return response[0]['generated_text']
+
+# def call_openai_api(chunk):
+#     response = openai.chat.completions.create(
+#         model="gpt-4-1106-preview",
+#         messages=[
+#             {"role": "system", "content": sum_prompt},
+#             {"role": "user", "content": f" {chunk}"},
+#         ],
+#         max_tokens=500,
+#         n=1,
+#         stop=None,
+#         temperature=0.5,
+#     )
+#     return response.choices[0].message.content
 
 def split_into_chunks(text, tokens=500):
     encoding = tiktoken.encoding_for_model('gpt-4-1106-preview')
@@ -58,7 +74,7 @@ def process_chunks(content):
 
     # Processes chunks in parallel
     with ThreadPoolExecutor() as executor:
-        responses = list(executor.map(call_openai_api, chunks))
+        responses = list(executor.map(call_huggingface_model, chunks))
     # print(responses)
     return responses
 
